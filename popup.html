@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>edge-font</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <h1>edge-font</h1>
+    <p id="host" class="host"></p>
+  </header>
+
+  <label class="toggle">
+    <input type="checkbox" id="enabled">
+    <span>Slå på för den här webbplatsen</span>
+  </label>
+
+  <label class="field" id="font-field" hidden>
+    <span>Typsnitt</span>
+    <select id="font-select"></select>
+  </label>
+
+  <label class="field" id="custom-field" hidden>
+    <span>Eget typsnitt</span>
+    <input type="text" id="custom-font" placeholder="t.ex. Roboto" autocomplete="off" spellcheck="false">
+  </label>
+
+  <script src="popup.js"></script>
+</body>
+</html>
