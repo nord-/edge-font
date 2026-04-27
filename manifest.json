@@ -2,7 +2,8 @@
   "manifest_version": 3,
   "name": "edge-font",
   "version": "0.1.0",
-  "description": "Per-site font override with a system-font picker.",
+  "description": "__MSG_extDescription__",
+  "default_locale": "en",
   "permissions": ["storage", "activeTab"],
   "host_permissions": ["<all_urls>"],
   "action": {

@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Edge browser extension (Manifest V3) that overrides the font on a per-site basis. The user opens the extension popup on any site, toggles "Slå på för den här webbplatsen", and picks a font from a curated system-font list (or types in a custom font name). Default is **off** for every site — the extension is inert until the user explicitly enables it for a host.
+Edge browser extension (Manifest V3) that overrides the font on a per-site basis. The user opens the extension popup on any site, toggles "Enable for this website", and picks a font from a curated system-font list (or types in a custom font name). Default is **off** for every site — the extension is inert until the user explicitly enables it for a host.
+
+UI follows the browser's UI language (`chrome.i18n.getUILanguage()`), which on Android tracks the phone's system language. Translations live in `_locales/<lang>/messages.json`; `default_locale` is `en` and is used as the fallback when a user's locale isn't shipped.
 
 Primary target: Edge for Android (which supports MV3 extensions installed from the Edge Add-ons store). The same package runs unchanged in Edge desktop, which is the development environment. Edge for iOS does not support extensions and is out of scope.
 
@@ -32,9 +34,17 @@ Storage shape:
 
 `hostname` is used as-is. `www.example.com` and `example.com` are distinct keys; that is intentional and predictable. No eTLD+1 normalization.
 
+## Internationalization
+
+Strings live in `_locales/<lang>/messages.json` and are referenced as `__MSG_key__` from `manifest.json` (only `description` uses this — the brand name `edge-font` is intentionally not localized). HTML elements declare their key via `data-i18n="key"` (text content) or `data-i18n-placeholder="key"` (input placeholders); `localize()` in `popup.js` runs once on popup open and rewrites them via `chrome.i18n.getMessage`. Strings created at runtime (e.g. the dropdown's "Custom…" option, the "Not available" host message) call the local `t(key, fallback)` helper.
+
+`default_locale` is `en` — used as the fallback when the user's locale isn't shipped. Adding a new language is a one-file change: drop `_locales/<lang>/messages.json` with the same keys as `_locales/en/messages.json`. Keys missing from a non-default locale silently fall back to the English message.
+
+The HTML carries English defaults inline, so even if `chrome.i18n` were unavailable (it always is in extension contexts, but as a hedge) the popup would still render readable text.
+
 ## Why a curated font list (not enumerated from the device)
 
-Edge for Android does not expose `window.queryLocalFonts()` (Local Font Access API), and even on desktop it requires a permission prompt and is gated behind a user gesture. Enumerating "fonts on the device" reliably across mobile + desktop is therefore not feasible. The popup ships a curated list of common cross-platform system fonts (`FONTS` in `popup.js`), plus an "Eget…" option that reveals a free-text input. If the typed font is not installed on the device, the browser falls back to the next family in the stack (`system-ui, sans-serif`), so an unknown name fails gracefully.
+Edge for Android does not expose `window.queryLocalFonts()` (Local Font Access API), and even on desktop it requires a permission prompt and is gated behind a user gesture. Enumerating "fonts on the device" reliably across mobile + desktop is therefore not feasible. The popup ships a curated list of common cross-platform system fonts (`FONTS` in `popup.js`), plus a "Custom…" option that reveals a free-text input. If the typed font is not installed on the device, the browser falls back to the next family in the stack (`system-ui, sans-serif`), so an unknown name fails gracefully.
 
 When adding entries to `FONTS`, prefer fonts that are reasonably likely to be installed on either Android, Windows, or macOS — there is no point listing platform-specific obscurities.
 
@@ -43,7 +53,7 @@ When adding entries to `FONTS`, prefer fonts that are reasonably likely to be in
 Package for the Edge Add-ons store (zip the runtime files, excluding repo metadata):
 
 ```powershell
-Compress-Archive -Path manifest.json, content.js, popup.html, popup.css, popup.js -DestinationPath dist/edge-font.zip -Force
+Compress-Archive -Path manifest.json, content.js, popup.html, popup.css, popup.js, _locales -DestinationPath dist/edge-font.zip -Force
 ```
 
 Local testing in Edge desktop:
@@ -51,7 +61,7 @@ Local testing in Edge desktop:
 1. Open `edge://extensions`.
 2. Enable **Developer mode**.
 3. **Load unpacked** → select this folder.
-4. Visit any site, click the extension icon, toggle "Slå på", pick a font.
+4. Visit any site, click the extension icon, flip "Enable for this website", pick a font.
 5. After editing files: click the reload icon on the extension card; content scripts re-inject on next page load, popup picks up its changes the next time it is opened.
 
 Local testing in Edge for Android: there is no "load unpacked" UI on stable Edge mobile. Iterate on desktop, then publish an unlisted/private build to Edge Add-ons to verify the mobile install path.
