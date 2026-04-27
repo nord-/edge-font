@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="sv">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,17 +14,17 @@
 
   <label class="toggle">
     <input type="checkbox" id="enabled">
-    <span>Slå på för den här webbplatsen</span>
+    <span data-i18n="enableForSite">Enable for this website</span>
   </label>
 
   <label class="field" id="font-field" hidden>
-    <span>Typsnitt</span>
+    <span data-i18n="fontLabel">Font</span>
     <select id="font-select"></select>
   </label>
 
   <label class="field" id="custom-field" hidden>
-    <span>Eget typsnitt</span>
-    <input type="text" id="custom-font" placeholder="t.ex. Roboto" autocomplete="off" spellcheck="false">
+    <span data-i18n="customFontLabel">Custom font</span>
+    <input type="text" id="custom-font" data-i18n-placeholder="customFontPlaceholder" placeholder="e.g. Roboto" autocomplete="off" spellcheck="false">
   </label>
 
   <script src="popup.js"></script>

@@ -20,6 +20,23 @@ const FONTS = [
 const CUSTOM = "__custom__";
 const $ = (id) => document.getElementById(id);
 
+function t(key, fallback) {
+  const msg = chrome.i18n.getMessage(key);
+  return msg || fallback;
+}
+
+function localize() {
+  document.documentElement.lang = chrome.i18n.getUILanguage();
+  for (const el of document.querySelectorAll("[data-i18n]")) {
+    const msg = chrome.i18n.getMessage(el.dataset.i18n);
+    if (msg) el.textContent = msg;
+  }
+  for (const el of document.querySelectorAll("[data-i18n-placeholder]")) {
+    const msg = chrome.i18n.getMessage(el.dataset.i18nPlaceholder);
+    if (msg) el.placeholder = msg;
+  }
+}
+
 async function getCurrentHost() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.url) return null;
@@ -41,7 +58,7 @@ function populateFontSelect() {
   }
   const customOpt = document.createElement("option");
   customOpt.value = CUSTOM;
-  customOpt.textContent = "Eget…";
+  customOpt.textContent = t("customOption", "Custom…");
   select.appendChild(customOpt);
 }
 
@@ -64,7 +81,7 @@ async function save(host) {
 async function init() {
   const host = await getCurrentHost();
   if (!host) {
-    $("host").textContent = "Inte tillgängligt på den här fliken";
+    $("host").textContent = t("notAvailable", "Not available on this tab");
     $("enabled").disabled = true;
     return;
   }
@@ -98,4 +115,5 @@ async function init() {
   $("custom-font").addEventListener("input", () => save(host));
 }
 
+localize();
 init();

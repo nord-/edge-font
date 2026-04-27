@@ -1,0 +1,30 @@
+{
+  "extDescription": {
+    "message": "Per-site font override with a system-font picker.",
+    "description": "Extension description shown in the Edge Add-ons store and in edge://extensions."
+  },
+  "enableForSite": {
+    "message": "Enable for this website",
+    "description": "Label next to the on/off checkbox in the popup."
+  },
+  "fontLabel": {
+    "message": "Font",
+    "description": "Label above the font dropdown in the popup."
+  },
+  "customFontLabel": {
+    "message": "Custom font",
+    "description": "Label above the free-text input shown when the user picks 'Custom…'."
+  },
+  "customFontPlaceholder": {
+    "message": "e.g. Roboto",
+    "description": "Placeholder text inside the custom-font text input."
+  },
+  "customOption": {
+    "message": "Custom…",
+    "description": "Last entry in the font dropdown that reveals the free-text input."
+  },
+  "notAvailable": {
+    "message": "Not available on this tab",
+    "description": "Shown when the popup opens on a tab without a usable URL (e.g. edge://… pages)."
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "extDescription": {
+    "message": "Anpassa typsnittet per webbplats — välj bland systemtypsnitt."
+  },
+  "enableForSite": {
+    "message": "Slå på för den här webbplatsen"
+  },
+  "fontLabel": {
+    "message": "Typsnitt"
+  },
+  "customFontLabel": {
+    "message": "Eget typsnitt"
+  },
+  "customFontPlaceholder": {
+    "message": "t.ex. Roboto"
+  },
+  "customOption": {
+    "message": "Eget…"
+  },
+  "notAvailable": {
+    "message": "Inte tillgängligt på den här fliken"
+  }
+}
