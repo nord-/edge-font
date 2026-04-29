@@ -29,7 +29,7 @@ Install from the Edge Add-ons store once a build is published there. Stable Edge
 ## Build a release zip
 
 ```powershell
-Compress-Archive -Path manifest.json, content.js, popup.html, popup.css, popup.js, _locales -DestinationPath dist/edge-font-0.1.0.zip -Force
+Compress-Archive -Path manifest.json, content.js, popup.html, popup.css, popup.js, _locales -DestinationPath dist/edge-font-0.2.0.zip -Force
 ```
 
 The zip is what you upload to Microsoft Partner Center when publishing (or re-publishing) to Edge Add-ons.
