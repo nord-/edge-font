@@ -26,5 +26,9 @@
   "notAvailable": {
     "message": "Not available on this tab",
     "description": "Shown when the popup opens on a tab without a usable URL (e.g. edge://… pages)."
+  },
+  "permissionMissing": {
+    "message": "edge-font has no access to this site. Turn the toggle on to request access.",
+    "description": "Shown in the popup when the extension lacks host permission for the current site (denied, revoked, or never granted — possible in Firefox where MV3 host permissions are revocable). Turning the toggle on re-triggers the permission prompt."
   }
 }

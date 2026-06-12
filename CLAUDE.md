@@ -8,7 +8,7 @@ Edge browser extension (Manifest V3) that overrides the font on a per-site basis
 
 UI follows the browser's UI language (`chrome.i18n.getUILanguage()`), which on Android tracks the phone's system language. Translations live in `_locales/<lang>/messages.json`; `default_locale` is `en` and is used as the fallback when a user's locale isn't shipped.
 
-Primary target: Edge for Android (which supports MV3 extensions installed from the Edge Add-ons store). The same package runs unchanged in Edge desktop, which is the development environment. Edge for iOS does not support extensions and is out of scope.
+Primary targets: Edge for Android (Edge Add-ons store) and Firefox for Android (addons.mozilla.org). The same package runs unchanged in Edge desktop and Firefox desktop, which are the development environments. One manifest serves all browsers: `browser_specific_settings` is ignored by Edge/Chrome. Edge for iOS and Firefox for iOS do not support extensions and are out of scope.
 
 ## Architecture
 
@@ -66,6 +66,20 @@ Local testing in Edge desktop:
 
 Local testing in Edge for Android: there is no "load unpacked" UI on stable Edge mobile. Iterate on desktop, then publish an unlisted/private build to Edge Add-ons to verify the mobile install path.
 
+Local testing in Firefox desktop:
+
+1. Open `about:debugging#/runtime/this-firefox`.
+2. **Load Temporary Add-on…** → select `manifest.json` in this folder.
+3. The add-on unloads when Firefox closes; reload it the same way.
+
+Local testing in Firefox for Android: no temporary-install UI on stable. Iterate on desktop, then publish to addons.mozilla.org (AMO) to verify the mobile install path.
+
+Manifest validation (also run by AMO at submission):
+
+```powershell
+npx web-ext lint --source-dir . --ignore-files "docs/**" ".git/**" "dist/**" "store/**" "*.md"
+```
+
 Inspect saved state during development: open the popup, right-click → **Inspect popup**, then in the console:
 
 ```js
@@ -83,7 +97,10 @@ await chrome.storage.local.get("sites")
 
 - **`document_start` matters.** Without it, the original font flashes for one frame before the override applies. Don't move it.
 - **`!important` is load-bearing.** Many sites set `font-family` inline or via deep selectors; without `!important` the override loses specificity battles.
-- **`<all_urls>` host permission triggers a broad install warning** ("read and change all your data on all websites"). It is required because the user can toggle the extension on for any site they visit. If you ever consider switching to `optional_host_permissions`, weigh the per-site permission prompt churn against the broad warning.
+- **`<all_urls>` host permission triggers a broad install warning** ("read and change all your data on all websites"). It is required because the user can toggle the extension on for any site they visit. If you ever consider switching to `optional_host_permissions`, weigh the per-site permission prompt churn against the broad warning. In Firefox the grant is revocable — see the Firefox MV3 gotcha below.
 - **`activeTab` is enough for `tab.url` in the popup** — no separate `tabs` permission is needed because the popup opens via user gesture.
 - **Bumping `manifest.json` `version` is required for every Edge Add-ons store update.** Semver is convention; the store only enforces a monotonic increase.
 - **Storage migrations.** If the `sites[host]` shape ever changes, write a one-shot migration in `content.js` and `popup.js` rather than assuming the new fields exist — old installs carry old shapes.
+- **Firefox MV3 host permissions are revocable.** Since Firefox 127, `<all_urls>` is granted at install (and auto-granted for temporary add-ons via `about:debugging`), so normally no prompt appears and the extension behaves like in Edge. But the user can revoke host access at any time in `about:addons` (entirely or per site), and updates that add new host permissions don't get them granted. `popup.js` therefore calls `chrome.permissions.request({ origins })` when the user enables a site — that call MUST stay the first `await` in the change handler, or Firefox drops the user-gesture context and throws. On first grant the popup reloads the tab so the manifest content script gets injected. Hosts without a valid match pattern (e.g. IPv6 literals) make `permissions.contains/request` throw — `popup.js` catches and falls back to an `<all_urls>` check. To test the prompt/deny flow: revoke site access in `about:addons` → Permissions, then toggle a site on.
+- **The gecko `id` in `browser_specific_settings` is permanent.** AMO locks it at first upload. Never change it.
+- **`data_collection_permissions` is required for AMO submissions** (since 2025-11-03). `{ "required": ["none"] }` is truthful — everything stays in `chrome.storage.local`. If the extension ever transmits data, this declaration must change first.
