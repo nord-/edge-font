@@ -19,5 +19,8 @@
   },
   "notAvailable": {
     "message": "Inte tillgängligt på den här fliken"
+  },
+  "permissionMissing": {
+    "message": "edge-font saknar åtkomst till den här webbplatsen. Slå på reglaget för att begära åtkomst."
   }
 }

@@ -25,6 +25,12 @@ header h1 {
   word-break: break-all;
 }
 
+.hint {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: #b3261e;
+}
+
 .toggle {
   display: flex;
   align-items: center;
@@ -77,6 +83,10 @@ header h1 {
 
   .host {
     color: #aaa;
+  }
+
+  .hint {
+    color: #f2b8b5;
   }
 
   .field > span {
